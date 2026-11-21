@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Table and Chairs Scene</title>
+<script src="script/aframe.min.js"></script>
+<style>
+  :root{ color-scheme: light dark; }
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000;}
+  #hint{
+    position:absolute; top:calc(env(safe-area-inset-top,0px) + 12px); left:12px;
+    z-index:5; background:rgba(20,20,20,0.55); color:#fdfaf2;
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    font-size:13px; padding:8px 12px; border-radius:8px; line-height:1.4;
+  }
+</style>
+</head>
+<body>
+<div id="hint">Drag to look around &middot; WASD / arrow keys to move</div>
+
+<canvas id="miloCanvas" width="600" height="160" style="position:absolute;left:-9999px;top:-9999px;"></canvas>
+<canvas id="milkCanvas" width="600" height="160" style="position:absolute;left:-9999px;top:-9999px;"></canvas>
+<script>
+  function drawLabel(id, bg, stripe, text, textColor, outline, italic) {
+    var c = document.getElementById(id);
+    var ctx = c.getContext('2d');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, c.width, c.height);
+    ctx.fillStyle = stripe;
+    ctx.fillRect(0, 16, c.width, 7);
+    ctx.fillRect(0, c.height - 23, c.width, 7);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = (italic ? 'italic ' : '') + 'bold 58px Georgia, serif';
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = outline;
+    ctx.fillStyle = textColor;
+    var slots = [c.width / 6, c.width / 2, (c.width / 6) * 5];
+    for (var i = 0; i < slots.length; i++) {
+      ctx.strokeText(text, slots[i], c.height / 2 + 4);
+      ctx.fillText(text, slots[i], c.height / 2 + 4);
+    }
+  }
+
+  function drawMiloWrap(id) {
+    var c = document.getElementById(id);
+    var ctx = c.getContext('2d');
+    var w = c.width, h = c.height;
+    ctx.fillStyle = '#1f7a3b';
+    ctx.fillRect(0, 0, w, h);
+
+    var midY = h * 0.52, amp = 14, thick = 36;
+    ctx.beginPath();
+    for (var x = 0; x <= w; x++) {
+      var y = midY + amp * Math.sin((x / w) * Math.PI * 4) - thick / 2;
+      if (x === 0) { ctx.moveTo(x, y); } else { ctx.lineTo(x, y); }
+    }
+    for (var x2 = w; x2 >= 0; x2--) {
+      var y2 = midY + amp * Math.sin((x2 / w) * Math.PI * 4) + thick / 2;
+      ctx.lineTo(x2, y2);
+    }
+    ctx.closePath();
+    var grad = ctx.createLinearGradient(0, midY - thick, 0, midY + thick);
+    grad.addColorStop(0, '#fff3c2');
+    grad.addColorStop(0.5, '#e7b94a');
+    grad.addColorStop(1, '#b9842a');
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.fillStyle = '#145c2b';
+    ctx.fillRect(0, 14, w, 6);
+    ctx.fillRect(0, h - 20, w, 6);
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font = 'bold 56px Georgia, serif';
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#fff6d8';
+    ctx.fillStyle = '#4a2d14';
+    var slots = [w / 6, w / 2, (w / 6) * 5];
+    for (var i = 0; i < slots.length; i++) {
+      ctx.strokeText('MILO', slots[i], midY + 4);
+      ctx.fillText('MILO', slots[i], midY + 4);
+    }
+  }
+
+  drawMiloWrap('miloCanvas');
+  drawLabel('milkCanvas', '#fbfbf9', '#2f6fb0', 'MILK', '#d23a3a', '#ffffff', true);
+</script>
+
+<a-scene shadow="type: pcfsoft">
+  <a-assets></a-assets>
+
+  <a-sky color="#bfe0f2"></a-sky>
+  <a-light type="ambient" color="#fff6e8" intensity="0.55"></a-light>
+  <a-light type="directional" color="#fff2d8" intensity="0.75" position="3 6 2" castShadow="true"></a-light>
+
+  <a-plane rotation="-90 0 0" width="12" height="12" color="#b98a52" shadow="receive: true"></a-plane>
+  <a-circle rotation="-90 0 0" radius="2.1" color="#7a4e8c" position="0 0.005 0" opacity="0.5"></a-circle>
+
+  <a-plane position="0 2.5 -5" width="12" height="5" color="#eef2f0"></a-plane>
+  <a-plane position="-6 2.5 0" rotation="0 90 0" width="12" height="5" color="#e3e9e6"></a-plane>
+
+  <a-box position="2.3 2.6 -4.97" width="1.3" height="1.3" depth="0.06" color="#6fb6d9"></a-box>
+  <a-box position="2.3 2.6 -4.97" width="1.45" height="1.45" depth="0.03" color="#8a5a35" wireframe="false"></a-box>
+  <a-box position="2.3 2.6 -4.95" width="1.3" height="0.06" depth="0.03" color="#8a5a35"></a-box>
+  <a-box position="2.3 2.6 -4.95" width="0.06" height="1.3" depth="0.03" color="#8a5a35"></a-box>
+
+  <a-cylinder position="-3.3 0.25 -3.6" radius="0.22" height="0.5" color="#7a4a2b" shadow="cast:true"></a-cylinder>
+  <a-cone position="-3.3 0.85 -3.6" radius-bottom="0.5" radius-top="0.02" height="1.1" color="#2f7a3e" shadow="cast:true"></a-cone>
+  <a-cone position="-3.3 1.35 -3.6" radius-bottom="0.38" radius-top="0.02" height="0.8" color="#3a9150" shadow="cast:true"></a-cone>
+
+  <a-entity position="0 0 0">
+    <a-cylinder position="0 1.0 0" radius="0.9" height="0.08" color="#8b5a2b" shadow="cast:true; receive:true"></a-cylinder>
+    <a-circle rotation="-90 0 0" position="0 1.041 0" radius="0.84" color="#f5efe2"></a-circle>
+    <a-cylinder position="0 0.5 0" radius="0.08" height="1.0" color="#444a4f" shadow="cast:true"></a-cylinder>
+    <a-cylinder position="0 0.03 0" radius="0.42" height="0.06" color="#33383c" shadow="cast:true"></a-cylinder>
+
+    <a-entity position="-0.32 1.135 0.05">
+      <a-cylinder radius="0.085" height="0.2" open-ended="true" side="double" material="src:#miloCanvas" shadow="cast:true"></a-cylinder>
+      <a-circle rotation="-90 0 0" radius="0.085" position="0 0.1 0" color="#c9ccce"></a-circle>
+      <a-circle rotation="90 0 0" radius="0.085" position="0 -0.1 0" color="#9aa0a3"></a-circle>
+    </a-entity>
+
+    <a-entity position="0.3 1.145 0.05">
+      <a-cylinder radius="0.095" height="0.22" open-ended="true" side="double" material="src:#milkCanvas" shadow="cast:true"></a-cylinder>
+      <a-circle rotation="-90 0 0" radius="0.095" position="0 0.11 0" color="#c9ccce"></a-circle>
+      <a-circle rotation="90 0 0" radius="0.095" position="0 -0.11 0" color="#9aa0a3"></a-circle>
+    </a-entity>
+
+    <a-cylinder position="-0.12 1.085 0.33" radius="0.045" height="0.09" color="#fbfbf9" open-ended="true" theta-length="360" side="double" shadow="cast:true"></a-cylinder>
+    <a-cylinder position="0.12 1.085 0.33" radius="0.045" height="0.09" color="#fbfbf9" open-ended="true" theta-length="360" side="double" shadow="cast:true"></a-cylinder>
+  </a-entity>
+
+  <a-entity position="0 0 1.25" rotation="0 180 0">
+    <a-box position="0 0.46 0" width="0.46" height="0.07" depth="0.46" color="#3f5f8a" shadow="cast:true"></a-box>
+    <a-box position="0 0.78 -0.2" width="0.46" height="0.58" depth="0.06" color="#3f5f8a" shadow="cast:true"></a-box>
+    <a-cylinder position="-0.19 0.21 -0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+    <a-cylinder position="0.19 0.21 -0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+    <a-cylinder position="-0.19 0.21 0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+    <a-cylinder position="0.19 0.21 0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+  </a-entity>
+
+  <a-entity position="0 0 -1.25" rotation="0 0 0">
+    <a-box position="0 0.46 0" width="0.46" height="0.07" depth="0.46" color="#8a4f4f" shadow="cast:true"></a-box>
+    <a-box position="0 0.78 -0.2" width="0.46" height="0.58" depth="0.06" color="#8a4f4f" shadow="cast:true"></a-box>
+    <a-cylinder position="-0.19 0.21 -0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+    <a-cylinder position="0.19 0.21 -0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+    <a-cylinder position="-0.19 0.21 0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+    <a-cylinder position="0.19 0.21 0.19" radius="0.025" height="0.42" color="#3a2a1d"></a-cylinder>
+  </a-entity>
+
+  <a-entity camera look-controls wasd-controls position="0 1.6 3.6"></a-entity>
+</a-scene>
+</body>
+</html>
